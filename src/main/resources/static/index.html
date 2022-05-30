@@ -17,7 +17,7 @@
      with https://www.npmjs.com/package/@googlemaps/js-api-loader.
     -->
     <script
-            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAAG_UPPB4khoxt6KzPWidWSXABZAwEqU&callback=initAutocomplete&libraries=places&v=weekly"
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCAAG_UPPB4khoxt6KzPWidWSXABZAwEqU&callback=initMap&libraries=places&v=weekly"
             defer
     ></script>
 </head>
@@ -38,11 +38,15 @@
             </div>
         </form>
         <hr/>
-        <input id="search-box" class="controls" type="text" placeholder="Search Box"/>
+        <div class="form-group" id="search-section" style="visibility: hidden;">
+            <label for="search-box">Search A/B point: </label>
+            <input id="search-box" class="controls" type="text" placeholder="Search Box"/>
+            <label for="search-box"> or Select A/B point on the map: </label>
+        </div>
     </div>
     <div class="row">
         <!--The div element for the map -->
-        <div id="map"></div>
+        <div id="map" style="visibility: hidden;"></div>
     </div>
 </div>
 </body>

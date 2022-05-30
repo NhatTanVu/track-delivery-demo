@@ -1,26 +1,30 @@
-var stompClient = null;
+let stompClient = null;
+let sessionId = null;
 
 function setConnected(connected) {
     $("#connect").prop("disabled", connected);
     $("#disconnect").prop("disabled", !connected);
     if (connected) {
-        $("#conversation").show();
+        $("#map").css('visibility', 'visible');
+        $("#search-section").css('visibility', 'visible');
     } else {
-        $("#conversation").hide();
+        $("#map").css('visibility', 'hidden');
+        $("#search-section").css('visibility', 'hidden');
     }
-    $("#greetings").html("");
 }
 
 function connect() {
-    var socket = new SockJS('/gs-guide-websocket');
+    const socket = new SockJS('/gs-guide-websocket');
     stompClient = Stomp.over(socket);
     stompClient.connect({}, function (frame) {
         setConnected(true);
-        console.log('Connected: ' + frame);
+        //console.log('Connected: ' + frame);
+        sessionId = /\/([^\/]+)\/websocket/.exec(socket._transport.url)[1];
+        console.log("sessionId = " + sessionId);
         stompClient.subscribe('/topic/greetings', function (greeting) {
-            let position = JSON.parse(greeting.body);
-            if (start == null || (position.lat != start.lat || position.lng != start.lng)) {
-                calcRoute({"lat": position.lat, "lng": position.lng});
+            let mapContent = JSON.parse(greeting.body);
+            if (mapContent != null && sessionId != mapContent.sessionId) {
+                syncMap(mapContent);
             }
         });
     });
@@ -34,13 +38,11 @@ function disconnect() {
     console.log("Disconnected");
 }
 
-function syncPosition() {
-    if (stompClient !== null && start != null) {
-        stompClient.send("/app/hello", {}, JSON.stringify({
-            "lat": start.lat,
-            "lng": start.lng,
-            "zoom": map.getZoom()
-        }));
+function notifyChanged(mapContent) {
+    if (stompClient !== null && mapContent !== null) {
+        mapContent.sessionId = sessionId;
+        console.log(mapContent);
+        stompClient.send("/app/hello", {}, JSON.stringify(mapContent));
     }
 }
 
