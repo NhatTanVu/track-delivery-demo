@@ -14,7 +14,7 @@
 	<name>TrackDelivery</name>
 	<description>DispoSell Demo project for Track Delivery</description>
 	<properties>
-		<java.version>18</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
