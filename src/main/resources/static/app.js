@@ -19,7 +19,9 @@ function connect() {
         console.log('Connected: ' + frame);
         stompClient.subscribe('/topic/greetings', function (greeting) {
             let position = JSON.parse(greeting.body);
-            addMarker(position);
+            if (start == null || (position.lat != start.lat || position.lng != start.lng)) {
+                calcRoute({"lat": position.lat, "lng": position.lng});
+            }
         });
     });
 }
@@ -33,10 +35,10 @@ function disconnect() {
 }
 
 function syncPosition() {
-    if (stompClient !== null && markers.length > 0) {
+    if (stompClient !== null && start != null) {
         stompClient.send("/app/hello", {}, JSON.stringify({
-            "lat": markers[0].position.lat(),
-            "lng": markers[0].position.lng(),
+            "lat": start.lat,
+            "lng": start.lng,
             "zoom": map.getZoom()
         }));
     }
